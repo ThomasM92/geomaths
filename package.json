@@ -1,0 +1,27 @@
+{
+  "name": "geomaths",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "/dist"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ThomasM92/geomaths.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ThomasM92/geomaths/issues"
+  },
+  "homepage": "https://github.com/ThomasM92/geomaths#readme",
+  "dependencies": {
+    "typescript": "^4.8.4"
+  }
+}
