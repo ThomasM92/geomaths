@@ -24,23 +24,6 @@ export class Mat3 {
 
 	// * Getters & Setters *
 
-	get isValid(): boolean {
-		if (
-			Number.isFinite(this.m11) &&
-			Number.isFinite(this.m12) &&
-			Number.isFinite(this.m13) &&
-			Number.isFinite(this.m21) &&
-			Number.isFinite(this.m22) &&
-			Number.isFinite(this.m23) &&
-			Number.isFinite(this.m31) &&
-			Number.isFinite(this.m32) &&
-			Number.isFinite(this.m33)
-		)
-			return true;
-
-		return false;
-	}
-
 	// Makes a Matrix3 instance iterable (for...of)
 	*[Symbol.iterator]() {
 		yield this.m11;

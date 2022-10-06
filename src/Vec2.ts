@@ -1,9 +1,7 @@
 import { EPSILON } from './constants';
+import { Mat2 } from './Mat2';
 import { Mat3 } from './Mat3';
-import { Mat4 } from './Mat4';
 import { clamp } from './utils';
-import { Quat } from './Quat';
-import { Vec4 } from './Vec4';
 import { Vec3 } from './Vec3';
 
 /**
@@ -26,11 +24,6 @@ export class Vec2 {
 	constructor(public x: number = 0, public y: number = 0) {}
 
 	// * Getters & Setters *
-
-	get isValid(): boolean {
-		if (!Number.isFinite(this.x)) return false;
-		return Number.isFinite(this.y);
-	}
 
 	get length(): number {
 		return Math.sqrt(this.lengthSq);
@@ -108,17 +101,6 @@ export class Vec2 {
 		return Math.acos(clamp(theta, -1, 1));
 	}
 
-	public apply(fn: (component: number) => number): Vec2 {
-		return this.clone()._apply(fn);
-	}
-
-	public _apply(fn: (component: number) => number): Vec2 {
-		this.x = fn(this.x);
-		this.y = fn(this.y);
-
-		return this;
-	}
-
 	/**
 	 * Creates a new Vec2 copied from the current Vec2
 	 * @returns {Vec2}
@@ -182,7 +164,7 @@ export class Vec2 {
 	 * @returns
 	 */
 	public isColinearTo(vec2: Vec2, precision: number = EPSILON): boolean {
-		// return this.cross(vector).length < precision ** 0.5;
+		return Math.abs(this.x * vec2.y - this.y * vec2.x) < precision;
 	}
 
 	/**
@@ -223,6 +205,17 @@ export class Vec2 {
 	public _lerp(vec2: Vec2, scalar: number): Vec2 {
 		this.x += (vec2.x - this.x) * scalar;
 		this.y += (vec2.y - this.y) * scalar;
+
+		return this;
+	}
+
+	public map(fn: (component: number) => number): Vec2 {
+		return this.clone()._map(fn);
+	}
+
+	public _map(fn: (component: number) => number): Vec2 {
+		this.x = fn(this.x);
+		this.y = fn(this.y);
 
 		return this;
 	}
@@ -526,11 +519,5 @@ export class Vec2 {
 
 	static fromVec3(vec3: Vec3): Vec2 {
 		return new Vec2(vec3.x, vec3.y);
-	}
-
-	static isValid(vec2: Vec2): boolean {
-		if (!(vec2 instanceof Vec2)) return false;
-		if (!Number.isFinite(vec2?.x)) return false;
-		return Number.isFinite(vec2?.y);
 	}
 }

@@ -22,15 +22,6 @@ export class Vec4 {
 
 	// * Getters & Setters *
 
-	get isValid(): boolean {
-		return (
-			Number.isFinite(this.x) &&
-			Number.isFinite(this.y) &&
-			Number.isFinite(this.z) &&
-			Number.isFinite(this.w)
-		);
-	}
-
 	get length(): number {
 		return Math.sqrt(this.lengthSq);
 	}
@@ -507,12 +498,4 @@ export class Vec4 {
 	static random = function (): Vec4 {
 		return new Vec4(Math.random(), Math.random(), Math.random(), Math.random());
 	};
-
-	static isValid(vector: Vec4): boolean {
-		if (!(vector instanceof Vec4)) return false;
-		if (!Number.isFinite(vector?.x)) return false;
-		if (!Number.isFinite(vector?.y)) return false;
-		if (!Number.isFinite(vector?.z)) return false;
-		return Number.isFinite(vector?.w);
-	}
 }

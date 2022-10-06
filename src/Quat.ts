@@ -21,13 +21,6 @@ export class Quat {
 
 	// * Getters & Setters *
 
-	get isValid(): boolean {
-		if (!Number.isFinite(this.x)) return false;
-		if (!Number.isFinite(this.y)) return false;
-		if (!Number.isFinite(this.z)) return false;
-		return Number.isFinite(this.w);
-	}
-
 	get length(): number {
 		return Math.sqrt(this.lengthSq);
 	}

@@ -1,9 +1,9 @@
 import { EPSILON } from './constants';
 import { Mat3 } from './Mat3';
 import { Mat4 } from './Mat4';
-import { Vec2 } from './Vec2';
-import { clamp } from './utils';
 import { Quat } from './Quat';
+import { clamp } from './utils';
+import { Vec2 } from './Vec2';
 import { Vec4 } from './Vec4';
 
 /**
@@ -28,12 +28,6 @@ export class Vec3 {
 	constructor(public x: number = 0, public y: number = 0, public z: number = 0) {}
 
 	// * Getters & Setters *
-
-	get isValid(): boolean {
-		if (!Number.isFinite(this.x)) return false;
-		if (!Number.isFinite(this.y)) return false;
-		return Number.isFinite(this.z);
-	}
 
 	get length(): number {
 		return Math.sqrt(this.lengthSq);
@@ -712,12 +706,5 @@ export class Vec3 {
 
 	static fromVec4(vector: Vec4): Vec3 {
 		return new Vec3(vector.x, vector.y, vector.z);
-	}
-
-	static isValid(vector: Vec3): boolean {
-		if (!(vector instanceof Vec3)) return false;
-		if (!Number.isFinite(vector?.x)) return false;
-		if (!Number.isFinite(vector?.y)) return false;
-		return Number.isFinite(vector?.z);
 	}
 }
