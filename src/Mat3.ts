@@ -110,7 +110,7 @@ export class Mat3 {
 	}
 
 	/**
-	 * There is no equivalent .invertMutate() method to force handling non-inversible matrices
+	 * There is no equivalent ._inverte() method to force handling non-inversible matrices
 	 * @see http://www.euclideanspace.com/maths/algebra/matrix/functions/inverse/threeD/index.htm
 	 * @returns
 	 */

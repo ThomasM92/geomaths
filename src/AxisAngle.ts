@@ -1,5 +1,4 @@
 import { EPSILON } from './constants';
-import { Mat3 } from './Mat3';
 import { Quat } from './Quat';
 import { Vec3 } from './Vec3';
 
