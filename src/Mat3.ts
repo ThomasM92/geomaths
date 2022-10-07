@@ -4,12 +4,8 @@ import { Euler, EulerOrder } from './Euler';
 import { Quat } from './Quat';
 import { Vec3 } from './Vec3';
 
-/**
- * A 3 by 3 matrix
- * @class
- */
+/** A 3 by 3 matrix */
 export class Mat3 {
-	/** @constructor */
 	constructor(
 		public m11: number = 0,
 		public m12: number = 0,
@@ -39,31 +35,13 @@ export class Mat3 {
 
 	// * Public Methods *
 
-	public apply(fn: (element: number) => number): Mat3 {
-		return this.clone()._apply(fn);
-	}
-
-	public _apply(fn: (element: number) => number): Mat3 {
-		this.m11 = fn(this.m11);
-		this.m12 = fn(this.m12);
-		this.m13 = fn(this.m13);
-		this.m21 = fn(this.m21);
-		this.m22 = fn(this.m22);
-		this.m23 = fn(this.m23);
-		this.m31 = fn(this.m31);
-		this.m32 = fn(this.m32);
-		this.m33 = fn(this.m33);
-
-		return this;
-	}
-
 	/**
 	 *
 	 * @param mat3
 	 * @returns this: this[i,j] <- matrix3[i,j]
 	 */
-	public copy(mat3: Mat3): Mat3 {
-		return this.set(
+	public _copy(mat3: Mat3): Mat3 {
+		return this._set(
 			mat3.m11,
 			mat3.m12,
 			mat3.m13,
@@ -114,7 +92,7 @@ export class Mat3 {
 	 * @see http://www.euclideanspace.com/maths/algebra/matrix/functions/inverse/threeD/index.htm
 	 * @returns
 	 */
-	public invert(): Mat3 | void {
+	public inv(): Mat3 | void {
 		const det = this.det();
 
 		if (det === 0) return;
@@ -140,7 +118,7 @@ export class Mat3 {
 	 * @param [precision=EPSILON] the comparison precision
 	 * @returns
 	 */
-	public isEqualTo(mat3: Mat3, precision: number = EPSILON): boolean {
+	public equals(mat3: Mat3, precision: number = EPSILON): boolean {
 		return (
 			Math.abs(this.m11 - mat3.m11) < precision &&
 			Math.abs(this.m12 - mat3.m12) < precision &&
@@ -154,18 +132,36 @@ export class Mat3 {
 		);
 	}
 
-	public getColumn(column: number): Vec3 | void {
+	public col(column: number): Vec3 {
 		if (column === 0) return new Vec3(this.m11, this.m21, this.m31);
 		else if (column === 1) return new Vec3(this.m12, this.m22, this.m32);
 		else if (column === 2) return new Vec3(this.m13, this.m23, this.m33);
 		else throw new RangeError('Expecting 0 <= column <= 2');
 	}
 
-	public getRow(row: number): Vec3 | void {
+	public row(row: number): Vec3 {
 		if (row === 0) return new Vec3(this.m11, this.m12, this.m13);
 		else if (row === 1) return new Vec3(this.m21, this.m22, this.m23);
 		else if (row === 2) return new Vec3(this.m31, this.m32, this.m33);
 		else throw new RangeError('Expecting 0 <= row <= 2');
+	}
+
+	public map(fn: (element: number) => number): Mat3 {
+		return this.clone()._map(fn);
+	}
+
+	public _map(fn: (element: number) => number): Mat3 {
+		this.m11 = fn(this.m11);
+		this.m12 = fn(this.m12);
+		this.m13 = fn(this.m13);
+		this.m21 = fn(this.m21);
+		this.m22 = fn(this.m22);
+		this.m23 = fn(this.m23);
+		this.m31 = fn(this.m31);
+		this.m32 = fn(this.m32);
+		this.m33 = fn(this.m33);
+
+		return this;
 	}
 
 	/**
@@ -173,8 +169,8 @@ export class Mat3 {
 	 * @param mat3
 	 * @returns this * matrix3
 	 */
-	public multiplyMat3(mat3: Mat3): Mat3 {
-		return this.clone()._multiplyMat3(mat3);
+	public mul(mat3: Mat3): Mat3 {
+		return this.clone()._mul(mat3);
 	}
 
 	/**
@@ -182,8 +178,8 @@ export class Mat3 {
 	 * @param mat3
 	 * @returns this <- this * matrix3
 	 */
-	public _multiplyMat3(mat3: Mat3): Mat3 {
-		return this.set(
+	public _mul(mat3: Mat3): Mat3 {
+		return this._set(
 			this.m11 * mat3.m11 + this.m12 * mat3.m21 + this.m13 * mat3.m31,
 			this.m11 * mat3.m12 + this.m12 * mat3.m22 + this.m13 * mat3.m32,
 			this.m11 * mat3.m13 + this.m12 * mat3.m23 + this.m13 * mat3.m33,
@@ -198,10 +194,10 @@ export class Mat3 {
 
 	/**
 	 *
-	 * @param matrix
+	 * @param vec3
 	 * @returns this * vector3
 	 */
-	public multiplyVec3(vec3: Vec3): Vec3 {
+	public mulVec3(vec3: Vec3): Vec3 {
 		return new Vec3(
 			this.m11 * vec3.x + this.m12 * vec3.y + this.m13 * vec3.z,
 			this.m21 * vec3.x + this.m22 * vec3.y + this.m23 * vec3.z,
@@ -214,8 +210,8 @@ export class Mat3 {
 	 * @param mat3
 	 * @returns matrix3 * this
 	 */
-	public permultiplyMat3(mat3: Mat3): Mat3 {
-		return this.clone()._permultiplyMat3(mat3);
+	public permul(mat3: Mat3): Mat3 {
+		return this.clone()._permul(mat3);
 	}
 
 	/**
@@ -223,8 +219,8 @@ export class Mat3 {
 	 * @param mat3
 	 * @returns this <- matrix3 * this
 	 */
-	public _permultiplyMat3(mat3: Mat3): Mat3 {
-		return this.set(
+	public _permul(mat3: Mat3): Mat3 {
+		return this._set(
 			mat3.m11 * this.m11 + mat3.m12 * this.m21 + mat3.m13 * this.m31,
 			mat3.m11 * this.m12 + mat3.m12 * this.m22 + mat3.m13 * this.m32,
 			mat3.m11 * this.m13 + mat3.m12 * this.m23 + mat3.m13 * this.m33,
@@ -242,7 +238,7 @@ export class Mat3 {
 	 * @param vec3
 	 * @returns vector3 * this
 	 */
-	public permultiplyVec3(vec3: Vec3): Vec3 {
+	public permulVec3(vec3: Vec3): Vec3 {
 		return new Vec3(
 			vec3.x * this.m11 + vec3.y * this.m21 + vec3.z * this.m31,
 			vec3.x * this.m12 + vec3.y * this.m22 + vec3.z * this.m32,
@@ -299,7 +295,7 @@ export class Mat3 {
 	 * @returns this: this[i,j] <- this[j,i]
 	 */
 	public _transpose(): Mat3 {
-		return this.set(
+		return this._set(
 			this.m11,
 			this.m21,
 			this.m31,
@@ -312,7 +308,7 @@ export class Mat3 {
 		);
 	}
 
-	public set(
+	public _set(
 		m11: number,
 		m12: number,
 		m13: number,
@@ -337,28 +333,12 @@ export class Mat3 {
 	}
 
 	/**
-	 *
-	 * @param row
-	 * @param col
-	 * @param value
-	 * @returns this: this[row,col] <- value
-	 */
-	public setElement(row: number, col: number, value: number): Mat3 | void {
-		if (row < 0 || row > 2 || col < 0 || col > 2) return;
-
-		// @ts-ignore
-		this[`m${row + 1}${col + 1}`] = value;
-
-		return this;
-	}
-
-	/**
 	 * @todo swap vector and column for more intuitive writing
 	 * @param vector
 	 * @param column
 	 * @returns this: this[_,column] <- vector3
 	 */
-	public setColumn(vector: Vec3, column: number): Mat3 | void {
+	public _col(vector: Vec3, column: number): Mat3 {
 		if (column === 0) {
 			this.m11 = vector.x;
 			this.m21 = vector.y;
@@ -383,7 +363,7 @@ export class Mat3 {
 	 * @param row
 	 * @returns this: this[row,_] <- vector3
 	 */
-	public setRow(vector: Vec3, row: number): Mat3 | void {
+	public _row(vector: Vec3, row: number): Mat3 {
 		if (row === 0) {
 			this.m11 = vector.x;
 			this.m12 = vector.y;
@@ -408,7 +388,7 @@ export class Mat3 {
 	 *
 	 * @returns
 	 */
-	public static indentity(): Mat3 {
+	public static Indentity(): Mat3 {
 		return new Mat3(1, 0, 0, 0, 1, 0, 0, 0, 1);
 	}
 

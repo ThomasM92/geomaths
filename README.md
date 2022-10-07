@@ -34,7 +34,7 @@ function rotatePointAroundLine(point: Point, line: Line, angle: number): Point {
 }
 ```
 
-Geomaths aims at being a fast but safe core building block for any project. Methods are non-mutating by default, but in-place alternatives can be use. Perfomance freaks, the mighty `_` is your friend.
+Geomaths aims at being a fast but safe core building block for any project. Methods are non-mutating by default, every `method` that can be preformed in-place safely has an `_method` alternative.
 
 ```typescript
 import { Vec3 } from 'geomaths';
@@ -47,23 +47,16 @@ function barycenter(vertices: Vec3[]): Vec3 {
 
   return sum._scale(1 / vertices.length);
 }
-```
 
-In general, every `method` that can be preformed in-place safely has an `_method` alternative.
+const vec = Vec3.randomDirection();
+const mat = Mat3.random();
 
-```typescript
-...
+// _inv() does not exist as mat.det() = 0 can occure
+const matInv: Mat3 | void = mat.inv();
 
-// todo: find an exemple with Mat3 inversion that could be done in-place to show that _invert() does not exists
+// Mat3._mulVec3() does not exist as Mat3 <- Vec3 isnt possible
+const rot1 = mat.mulVec3(vec);
 
-const mat = new Mat3(
-   0,  1,  3,
-  -1,  3, -2,
-   3, -3,  0
-);
-
-const matInv: Mat3 | void = mat.invert();
-if (matInv) return point._multiplyMat3(matInv);
-
-...
+// To store result on original vec
+const rot2 = vec._permulMat3(mat);
 ```

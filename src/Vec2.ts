@@ -4,23 +4,8 @@ import { Mat3 } from './Mat3';
 import { clamp } from './utils';
 import { Vec3 } from './Vec3';
 
-/**
- * @param x
- * @param y
- * @returns {Vec2}
- */
-
-/**
- * A 2-dimensional euclidian vector
- * @todo check equality error proportions (exemple .dot might need sqrt(EPSILON))
- * @class
- */
+/** A 2-dimensional euclidian vector */
 export class Vec2 {
-	/**
-	 * @constructor
-	 * @param x
-	 * @param y
-	 */
 	constructor(public x: number = 0, public y: number = 0) {}
 
 	// * Getters & Setters *
@@ -113,7 +98,7 @@ export class Vec2 {
 	 * @param vector
 	 * @returns the current updated Vec2
 	 */
-	public copy(vector: Vec2): Vec2 {
+	public _copy(vector: Vec2): Vec2 {
 		this.x = vector.x;
 		this.y = vector.y;
 
@@ -136,9 +121,7 @@ export class Vec2 {
 	 * @returns
 	 */
 	public distanceToLine(position: Vec2, direction: Vec2): number {
-		const projection = this.projectOnLine(position, direction);
-
-		return this.distanceTo(projection);
+		return this.projectOnLine(position, direction).distanceTo(this);
 	}
 
 	/**
@@ -163,7 +146,7 @@ export class Vec2 {
 	 * @param [precision]
 	 * @returns
 	 */
-	public isColinearTo(vec2: Vec2, precision: number = EPSILON): boolean {
+	public colinearTo(vec2: Vec2, precision: number = EPSILON): boolean {
 		return Math.abs(this.x * vec2.y - this.y * vec2.x) < precision;
 	}
 
@@ -173,7 +156,7 @@ export class Vec2 {
 	 * @param [precision]
 	 * @returns
 	 */
-	public isOrthogonalTo(vec2: Vec2, precision: number = EPSILON): boolean {
+	public orthogonalTo(vec2: Vec2, precision: number = EPSILON): boolean {
 		return Math.abs(this.dot(vec2)) < precision;
 	}
 
@@ -182,7 +165,7 @@ export class Vec2 {
 	 * @param {Number} precision [optional]
 	 * @returns {Boolean}
 	 */
-	public isEqualTo(vec2: Vec2, precision: number = EPSILON): boolean {
+	public equals(vec2: Vec2, precision: number = EPSILON): boolean {
 		return this.distanceTo(vec2) < precision;
 	}
 
@@ -225,8 +208,8 @@ export class Vec2 {
 	 * @param vec2
 	 * @returns the resulting Vec2
 	 */
-	public multiply(vec2: Vec2): Vec2 {
-		return this.clone()._multiply(vec2);
+	public mul(vec2: Vec2): Vec2 {
+		return this.clone()._mul(vec2);
 	}
 
 	/**
@@ -234,7 +217,7 @@ export class Vec2 {
 	 * @param vec2
 	 * @returns the current updated Vec2
 	 */
-	public _multiply(vec2: Vec2): Vec2 {
+	public _mul(vec2: Vec2): Vec2 {
 		this.x *= vec2.x;
 		this.y *= vec2.y;
 
@@ -246,8 +229,8 @@ export class Vec2 {
 	 * @param mat2
 	 * @returns the resulting Vec2
 	 */
-	public multiplyMat2(mat2: Mat2): Vec2 {
-		return this.clone()._multiplyMat2(mat2);
+	public mulMat2(mat2: Mat2): Vec2 {
+		return this.clone()._mulMat2(mat2);
 	}
 
 	/**
@@ -255,8 +238,8 @@ export class Vec2 {
 	 * @param mat2
 	 * @returns the current updated Vec2
 	 */
-	public _multiplyMat2(mat2: Mat2): Vec2 {
-		return this.set(this.x * mat2.m11 + this.y * mat2.m21, this.x * mat2.m12 + this.y * mat2.m22);
+	public _mulMat2(mat2: Mat2): Vec2 {
+		return this._set(this.x * mat2.m11 + this.y * mat2.m21, this.x * mat2.m12 + this.y * mat2.m22);
 	}
 
 	/**
@@ -264,8 +247,8 @@ export class Vec2 {
 	 * @param mat2
 	 * @returns the resulting Vec2
 	 */
-	public permultiplyMat2(mat2: Mat2): Vec2 {
-		return this.clone()._permultiplyMat2(mat2);
+	public permulMat2(mat2: Mat2): Vec2 {
+		return this.clone()._permulMat2(mat2);
 	}
 
 	/**
@@ -273,8 +256,8 @@ export class Vec2 {
 	 * @param mat2
 	 * @returns the current updated Vec2
 	 */
-	public _permultiplyMat2(mat2: Mat2): Vec2 {
-		return this.set(mat2.m11 * this.x + mat2.m12 * this.y, mat2.m21 * this.x + mat2.m22 * this.y);
+	public _permulMat2(mat2: Mat2): Vec2 {
+		return this._set(mat2.m11 * this.x + mat2.m12 * this.y, mat2.m21 * this.x + mat2.m22 * this.y);
 	}
 
 	/**
@@ -282,8 +265,8 @@ export class Vec2 {
 	 * @param mat3
 	 * @returns
 	 */
-	public permultiplyMat3(mat3: Mat3): Vec2 {
-		return this.clone()._permultiplyMat3(mat3);
+	public permulMat3(mat3: Mat3): Vec2 {
+		return this.clone()._permulMat3(mat3);
 	}
 
 	/**
@@ -291,10 +274,10 @@ export class Vec2 {
 	 * @param mat3
 	 * @returns
 	 */
-	public _permultiplyMat3(mat3: Mat3): Vec2 {
+	public _permulMat3(mat3: Mat3): Vec2 {
 		const w = 1 / (mat3.m31 * this.x + mat3.m32 * this.y + mat3.m33);
 
-		return this.set(
+		return this._set(
 			(mat3.m11 * this.x + mat3.m12 * this.y + mat3.m13) * w,
 			(mat3.m21 * this.x + mat3.m22 * this.y + mat3.m23) * w
 		);
@@ -392,30 +375,8 @@ export class Vec2 {
 	 * @param y
 	 * @returns the current updated Vec2
 	 */
-	public set(x: number, y: number): Vec2 {
+	public _set(x: number, y: number): Vec2 {
 		this.x = x;
-		this.y = y;
-
-		return this;
-	}
-
-	/**
-	 *
-	 * @param x
-	 * @returns the current updated Vec2
-	 */
-	public setX(x: number): Vec2 {
-		this.x = x;
-
-		return this;
-	}
-
-	/**
-	 *
-	 * @param y
-	 * @returns the current updated Vec2
-	 */
-	public setY(y: number): Vec2 {
 		this.y = y;
 
 		return this;

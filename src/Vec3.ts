@@ -6,25 +6,8 @@ import { clamp } from './utils';
 import { Vec2 } from './Vec2';
 import { Vec4 } from './Vec4';
 
-/**
- * @param x
- * @param y
- * @param z
- * @returns {Vec3}
- */
-
-/**
- * A 3-dimensional euclidian vector
- * @todo check equality error proportions (exemple .dot might need sqrt(EPSILON))
- * @class
- */
+/** A 3-dimensional euclidian vector */
 export class Vec3 {
-	/**
-	 * @constructor
-	 * @param x
-	 * @param y
-	 * @param z
-	 */
 	constructor(public x: number = 0, public y: number = 0, public z: number = 0) {}
 
 	// * Getters & Setters *
@@ -108,18 +91,6 @@ export class Vec3 {
 		return Math.acos(clamp(theta, -1, 1));
 	}
 
-	public apply(fn: (component: number) => number): Vec3 {
-		return this.clone()._apply(fn);
-	}
-
-	public _apply(fn: (component: number) => number): Vec3 {
-		this.x = fn(this.x);
-		this.y = fn(this.y);
-		this.z = fn(this.z);
-
-		return this;
-	}
-
 	/**
 	 * Creates a new Vector3 copied from the current Vector3
 	 * @returns {Vec3}
@@ -132,7 +103,7 @@ export class Vec3 {
 	 * @param vector
 	 * @returns the current updated Vector3
 	 */
-	public copy(vector: Vec3): Vec3 {
+	public _copy(vector: Vec3): Vec3 {
 		this.x = vector.x;
 		this.y = vector.y;
 		this.z = vector.z;
@@ -177,50 +148,6 @@ export class Vec3 {
 
 	/**
 	 *
-	 * @param position
-	 * @param direction
-	 * @returns
-	 */
-	public distanceToLine(position: Vec3, direction: Vec3): number {
-		const projection = this.projectOnLine(position, direction);
-
-		return this.distanceTo(projection);
-	}
-
-	/**
-	 * @param position plane position
-	 * @param normal plane normal
-	 * @returns
-	 */
-	public distanceToPlane(position: Vec3, normal: Vec3): number;
-	/**
-	 * @param position plane position
-	 * @param normal plane normal
-	 * @param [direction] projection direction (default=normal)
-	 * @param [precision] floating point precision (default=1e-10)
-	 * @returns
-	 */
-	public distanceToPlane(
-		position: Vec3,
-		normal: Vec3,
-		direction?: Vec3,
-		precision?: number
-	): number | void;
-	public distanceToPlane(
-		position: Vec3,
-		normal: Vec3,
-		direction: Vec3 = normal,
-		precision: number = EPSILON
-	): number | void {
-		const projection = this.projectOnPlane(position, normal, direction, precision);
-
-		if (!projection) return;
-
-		return this.distanceTo(projection);
-	}
-
-	/**
-	 *
 	 * @param vector
 	 * @returns
 	 */
@@ -241,7 +168,7 @@ export class Vec3 {
 	 * @param [precision]
 	 * @returns
 	 */
-	public isColinearTo(vector: Vec3, precision: number = EPSILON): boolean {
+	public colinearTo(vector: Vec3, precision: number = EPSILON): boolean {
 		return this.cross(vector).length < precision ** 0.5;
 	}
 
@@ -251,7 +178,7 @@ export class Vec3 {
 	 * @param [precision]
 	 * @returns
 	 */
-	public isOrthogonalTo(vector: Vec3, precision: number = EPSILON): boolean {
+	public orthogonalTo(vector: Vec3, precision: number = EPSILON): boolean {
 		return Math.abs(this.dot(vector)) < precision;
 	}
 
@@ -260,7 +187,7 @@ export class Vec3 {
 	 * @param {Number} precision [optional]
 	 * @returns {Boolean}
 	 */
-	public isEqualTo(vector: Vec3, precision: number = EPSILON): boolean {
+	public equals(vector: Vec3, precision: number = EPSILON): boolean {
 		return this.distanceTo(vector) < precision;
 	}
 
@@ -288,13 +215,24 @@ export class Vec3 {
 		return this;
 	}
 
+	public map(fn: (component: number) => number): Vec3 {
+		return this.clone()._map(fn);
+	}
+
+	public _map(fn: (component: number) => number): Vec3 {
+		this.x = fn(this.x);
+		this.y = fn(this.y);
+		this.z = fn(this.z);
+
+		return this;
+	}
 	/**
 	 * Componant-wise multiplication
 	 * @param vector
 	 * @returns the resulting Vector3
 	 */
-	public multiply(vector: Vec3): Vec3 {
-		return this.clone()._multiply(vector);
+	public mul(vector: Vec3): Vec3 {
+		return this.clone()._mul(vector);
 	}
 
 	/**
@@ -302,7 +240,7 @@ export class Vec3 {
 	 * @param vector
 	 * @returns the current updated Vector3
 	 */
-	public _multiply(vector: Vec3): Vec3 {
+	public _mul(vector: Vec3): Vec3 {
 		this.x *= vector.x;
 		this.y *= vector.y;
 		this.z *= vector.z;
@@ -315,8 +253,8 @@ export class Vec3 {
 	 * @param matrix
 	 * @returns the resulting Vector3
 	 */
-	public multiplyMat3(matrix: Mat3): Vec3 {
-		return this.clone()._multiplyMat3(matrix);
+	public mulMat3(matrix: Mat3): Vec3 {
+		return this.clone()._mulMat3(matrix);
 	}
 
 	/**
@@ -324,8 +262,8 @@ export class Vec3 {
 	 * @param matrix
 	 * @returns the current updated Vector3
 	 */
-	public _multiplyMat3(matrix: Mat3): Vec3 {
-		return this.set(
+	public _mulMat3(matrix: Mat3): Vec3 {
+		return this._set(
 			this.x * matrix.m11 + this.y * matrix.m21 + this.z * matrix.m31,
 			this.x * matrix.m12 + this.y * matrix.m22 + this.z * matrix.m32,
 			this.x * matrix.m13 + this.y * matrix.m23 + this.z * matrix.m33
@@ -337,8 +275,8 @@ export class Vec3 {
 	 * @param matrix
 	 * @returns the resulting Vector3
 	 */
-	public permultiplyMat3(matrix: Mat3): Vec3 {
-		return this.clone()._permultiplyMat3(matrix);
+	public permulMat3(matrix: Mat3): Vec3 {
+		return this.clone()._permulMat3(matrix);
 	}
 
 	/**
@@ -346,8 +284,8 @@ export class Vec3 {
 	 * @param matrix
 	 * @returns the current updated Vector3
 	 */
-	public _permultiplyMat3(matrix: Mat3): Vec3 {
-		return this.set(
+	public _permulMat3(matrix: Mat3): Vec3 {
+		return this._set(
 			matrix.m11 * this.x + matrix.m12 * this.y + matrix.m13 * this.z,
 			matrix.m21 * this.x + matrix.m22 * this.y + matrix.m23 * this.z,
 			matrix.m31 * this.x + matrix.m32 * this.y + matrix.m33 * this.z
@@ -359,8 +297,8 @@ export class Vec3 {
 	 * @param matrix
 	 * @returns
 	 */
-	public permultiplyMat4(matrix: Mat4): Vec3 {
-		return this.clone()._permultiplyMat4(matrix);
+	public permulMat4(matrix: Mat4): Vec3 {
+		return this.clone()._permulMat4(matrix);
 	}
 
 	/**
@@ -368,10 +306,10 @@ export class Vec3 {
 	 * @param matrix
 	 * @returns
 	 */
-	public _permultiplyMat4(matrix: Mat4): Vec3 {
+	public _permulMat4(matrix: Mat4): Vec3 {
 		const w = 1 / (matrix.m41 * this.x + matrix.m42 * this.y + matrix.m43 * this.z + matrix.m44);
 
-		return this.set(
+		return this._set(
 			(matrix.m11 * this.x + matrix.m12 * this.y + matrix.m13 * this.z + matrix.m14) * w,
 			(matrix.m21 * this.x + matrix.m22 * this.y + matrix.m23 * this.z + matrix.m24) * w,
 			(matrix.m31 * this.x + matrix.m32 * this.y + matrix.m33 * this.z + matrix.m34) * w
@@ -431,92 +369,11 @@ export class Vec3 {
 	public orthogonalDirection(): Vec3 {
 		let vector = Vec3.randomDirection();
 
-		while (this.isColinearTo(vector)) {
+		while (this.colinearTo(vector)) {
 			vector = Vec3.randomDirection();
 		}
 
 		return this.cross(vector)._normalize();
-	}
-
-	/**
-	 *
-	 * @param position line position
-	 * @param direction line direction
-	 * @returns
-	 */
-	public projectOnLine(position: Vec3, direction: Vec3): Vec3 {
-		const vector = this.sub(position);
-		const magnitude = direction.dot(vector);
-
-		return direction.scale(magnitude)._add(position);
-	}
-
-	/**
-	 * Calculate projection onto a plane (orthogonal projection by default)
-	 * @param position plane position
-	 * @param normal plane normal
-	 * @returns The projected point or null if given projection direction is orthogonal to plane normal
-	 */
-	public projectOnPlane(position: Vec3, normal: Vec3): Vec3;
-	/**
-	 * Calculate projection onto a plane (orthogonal projection by default)
-	 * @param position plane position
-	 * @param normal plane normal
-	 * @param [direction=normal] projection direction (default=normal)
-	 * @param [precision=EPSILON] floating point precision (default=1e-10)
-	 * @returns The projected point or null if given projection direction is orthogonal to plane normal
-	 */
-	public projectOnPlane(
-		position: Vec3,
-		normal: Vec3,
-		direction?: Vec3,
-		precision?: number
-	): Vec3 | void;
-	public projectOnPlane(
-		position: Vec3,
-		normal: Vec3,
-		direction: Vec3 = normal,
-		precision: number = EPSILON
-	): Vec3 | void {
-		return this.clone()._projectOnPlane(position, normal, direction, precision);
-	}
-
-	/**
-	 * Calculate projection onto a plane (orthogonal projection by default)
-	 * @param position plane position
-	 * @param normal plane normal
-	 * @returns The projected point or null if given projection direction is orthogonal to plane normal
-	 */
-	public _projectOnPlane(position: Vec3, normal: Vec3): Vec3;
-	/**
-	 * Calculate projection onto a plane (orthogonal projection by default)
-	 * @param position plane position
-	 * @param normal plane normal
-	 * @param [direction=normal] projection direction (default=normal)
-	 * @param [precision=EPSILON] floating point precision (default=1e-10)
-	 * @returns The projected point or null if given projection direction is orthogonal to plane normal
-	 */
-	public _projectOnPlane(
-		position: Vec3,
-		normal: Vec3,
-		direction?: Vec3,
-		precision?: number
-	): Vec3 | void;
-	public _projectOnPlane(
-		position: Vec3,
-		normal: Vec3,
-		direction: Vec3 = normal,
-		precision: number = EPSILON
-	): Vec3 | void {
-		const nd = normal.dot(direction);
-		const cn = position.dot(normal);
-
-		if (Math.abs(nd) < precision) return;
-
-		const np = this.dot(normal);
-		const k = (cn - np) / nd;
-
-		return this.copy(direction.scale(k)._add(this));
 	}
 
 	/**
@@ -548,42 +405,9 @@ export class Vec3 {
 	 * @param z
 	 * @returns the current updated Vector3
 	 */
-	public set(x: number, y: number, z: number): Vec3 {
+	public _set(x: number, y: number, z: number): Vec3 {
 		this.x = x;
 		this.y = y;
-		this.z = z;
-
-		return this;
-	}
-
-	/**
-	 *
-	 * @param x
-	 * @returns the current updated Vector3
-	 */
-	public setX(x: number): Vec3 {
-		this.x = x;
-
-		return this;
-	}
-
-	/**
-	 *
-	 * @param y
-	 * @returns the current updated Vector3
-	 */
-	public setY(y: number): Vec3 {
-		this.y = y;
-
-		return this;
-	}
-
-	/**
-	 *
-	 * @param z
-	 * @returns the current updated Vector3
-	 */
-	public setZ(z: number): Vec3 {
 		this.z = z;
 
 		return this;

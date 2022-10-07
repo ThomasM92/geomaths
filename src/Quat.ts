@@ -52,8 +52,8 @@ export class Quat {
 	 * When used as rotation conj(q) = q' represents the reversed rotation.
 	 * @returns q' <- conj(this)
 	 */
-	public conjugate(): Quat {
-		return this.clone()._conjugate();
+	public conj(): Quat {
+		return this.clone()._conj();
 	}
 
 	/**
@@ -61,7 +61,7 @@ export class Quat {
 	 * When used as rotation conj(q) = q' represents the reversed rotation.
 	 * @returns this <- conj(this)
 	 */
-	public _conjugate(): Quat {
+	public _conj(): Quat {
 		this.x = -this.x;
 		this.y = -this.y;
 		this.z = -this.z;
@@ -74,7 +74,7 @@ export class Quat {
 	 * @param quat
 	 * @returns this <- quaternion
 	 */
-	public copy(quat: Quat): Quat {
+	public _copy(quat: Quat): Quat {
 		this.x = quat.x;
 		this.y = quat.y;
 		this.z = quat.z;
@@ -92,8 +92,8 @@ export class Quat {
 	 * @param quat
 	 * @returns this * quaternion
 	 */
-	public multiplyQuat(quat: Quat): Quat {
-		return this.clone()._multiplyQuat(quat);
+	public mul(quat: Quat): Quat {
+		return this.clone()._mul(quat);
 	}
 
 	/**
@@ -101,8 +101,8 @@ export class Quat {
 	 * @param quat
 	 * @returns this <- this * quaternion
 	 */
-	public _multiplyQuat(quat: Quat): Quat {
-		return this.set(
+	public _mul(quat: Quat): Quat {
+		return this._set(
 			this.x * quat.w + this.y * quat.z - this.z * quat.y + this.w * quat.x,
 			-this.x * quat.z + this.y * quat.w + this.z * quat.x + this.w * quat.y,
 			this.x * quat.y - this.y * quat.x + this.z * quat.w + this.w * quat.z,
@@ -115,8 +115,8 @@ export class Quat {
 	 * @param quat
 	 * @returns quaternion * this
 	 */
-	public permultiplyQuat(quat: Quat): Quat {
-		return this.clone()._permultiplyQuat(quat);
+	public permul(quat: Quat): Quat {
+		return this.clone()._permul(quat);
 	}
 
 	/**
@@ -124,8 +124,8 @@ export class Quat {
 	 * @param quat
 	 * @returns this <- quaternion * this
 	 */
-	public _permultiplyQuat(quat: Quat): Quat {
-		return this.set(
+	public _permul(quat: Quat): Quat {
+		return this._set(
 			quat.x * this.w + quat.y * this.z - quat.z * this.y + quat.w * this.x,
 			-quat.x * this.z + quat.y * this.w + quat.z * this.x + quat.w * this.y,
 			quat.x * this.y - quat.y * this.x + quat.z * this.w + quat.w * this.z,
@@ -148,7 +148,7 @@ export class Quat {
 	public _normalize(precision: number = EPSILON): Quat {
 		const l = this.length;
 
-		if (l < precision) return this.set(0, 0, 0, 1);
+		if (l < precision) return this._set(0, 0, 0, 1);
 
 		return this._scale(1 / l);
 	}
@@ -174,7 +174,7 @@ export class Quat {
 	 * @param w real part
 	 * @returns
 	 */
-	public set(x: number, y: number, z: number, w: number): Quat {
+	public _set(x: number, y: number, z: number, w: number): Quat {
 		this.x = x;
 		this.y = y;
 		this.z = z;
@@ -195,7 +195,7 @@ export class Quat {
 	 */
 	public _slerp(quat: Quat, param: number): Quat {
 		if (param === 0) return this;
-		if (param === 1) return this.copy(quat);
+		if (param === 1) return this._copy(quat);
 
 		const x = this.x,
 			y = this.y,
@@ -212,7 +212,7 @@ export class Quat {
 
 			cosHalfTheta = -cosHalfTheta;
 		} else {
-			this.copy(quat);
+			this._copy(quat);
 		}
 
 		if (cosHalfTheta >= 1.0) {
@@ -252,7 +252,7 @@ export class Quat {
 	}
 
 	/**
-	 * Is equivalent to this.multiplyQuat(vector.toQuat())._multiplyQuat(this.conjugate()).toVector3()
+	 * Is equivalent to this.mul(vector.toQuat())._mul(this.conj()).toVec3()
 	 * @param vec3
 	 * @returns u = q * v * q'
 	 */
@@ -308,7 +308,7 @@ export class Quat {
 	 * real part = 1 | imaginary part = 0
 	 * @returns
 	 */
-	public static indentity(): Quat {
+	public static Indentity(): Quat {
 		return new Quat(0, 0, 0, 1);
 	}
 

@@ -6,13 +6,6 @@ import { Vec3 } from './Vec3';
 
 /** A 4-dimensional vector */
 export class Vec4 {
-	/**
-	 * @constructor
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @param w
-	 */
 	constructor(
 		public x: number = 0,
 		public y: number = 0,
@@ -77,19 +70,6 @@ export class Vec4 {
 		return Math.acos(clamp(theta, -1, 1));
 	}
 
-	public apply(fn: (component: number) => number): Vec4 {
-		return this.clone()._apply(fn);
-	}
-
-	public _apply(fn: (component: number) => number): Vec4 {
-		this.x = fn(this.x);
-		this.y = fn(this.y);
-		this.z = fn(this.z);
-		this.w = fn(this.w);
-
-		return this;
-	}
-
 	/**
 	 * Creates a new Vector4 copied from the current Vector4
 	 * @returns {Vec4}
@@ -102,7 +82,7 @@ export class Vec4 {
 	 * @param vec4
 	 * @returns the current updated Vector4
 	 */
-	public copy(vec4: Vec4): Vec4 {
+	public _copy(vec4: Vec4): Vec4 {
 		this.x = vec4.x;
 		this.y = vec4.y;
 		this.z = vec4.z;
@@ -170,8 +150,12 @@ export class Vec4 {
 	 * @param {Number} precision [optional]
 	 * @returns {Boolean}
 	 */
-	public isEqualTo(vec4: Vec4, precision: number = EPSILON): boolean {
+	public equals(vec4: Vec4, precision: number = EPSILON): boolean {
 		return this.distanceTo(vec4) < precision;
+	}
+
+	public colinearTo(vec4: Vec4, precision: number = EPSILON): boolean {
+		return Math.abs(this.dot(vec4)) < precision;
 	}
 
 	/**
@@ -181,7 +165,7 @@ export class Vec4 {
 	 * @returns the resulting Vector4
 	 */
 	public lerp(vec4: Vec4, scalar: number): Vec4 {
-		return this.clone()._lerpMutate(vec4, scalar);
+		return this.clone()._lerp(vec4, scalar);
 	}
 
 	/**
@@ -190,11 +174,24 @@ export class Vec4 {
 	 * @param scalar interpolation factor, usually in [0, 1]
 	 * @returns the current updated Vector4
 	 */
-	public _lerpMutate(vec4: Vec4, scalar: number): Vec4 {
+	public _lerp(vec4: Vec4, scalar: number): Vec4 {
 		this.x += (vec4.x - this.x) * scalar;
 		this.y += (vec4.y - this.y) * scalar;
 		this.z += (vec4.z - this.z) * scalar;
 		this.w += (vec4.w - this.w) * scalar;
+
+		return this;
+	}
+
+	public map(fn: (component: number) => number): Vec4 {
+		return this.clone()._map(fn);
+	}
+
+	public _map(fn: (component: number) => number): Vec4 {
+		this.x = fn(this.x);
+		this.y = fn(this.y);
+		this.z = fn(this.z);
+		this.w = fn(this.w);
 
 		return this;
 	}
@@ -204,8 +201,8 @@ export class Vec4 {
 	 * @param vec4
 	 * @returns the resulting Vector4
 	 */
-	public multiplyVec4(vec4: Vec4): Vec4 {
-		return this.clone()._multiplyVec4(vec4);
+	public mul(vec4: Vec4): Vec4 {
+		return this.clone()._mul(vec4);
 	}
 
 	/**
@@ -213,7 +210,7 @@ export class Vec4 {
 	 * @param vec4
 	 * @returns the current updated Vector4
 	 */
-	public _multiplyVec4(vec4: Vec4): Vec4 {
+	public _mul(vec4: Vec4): Vec4 {
 		this.x *= vec4.x;
 		this.y *= vec4.y;
 		this.z *= vec4.z;
@@ -227,8 +224,8 @@ export class Vec4 {
 	 * @param mat4
 	 * @returns the resulting Vector4
 	 */
-	public multiplyMat4(mat4: Mat4): Vec4 {
-		return this.clone()._multiplyMat4(mat4);
+	public mulMat4(mat4: Mat4): Vec4 {
+		return this.clone()._mulMat4(mat4);
 	}
 
 	/**
@@ -236,8 +233,8 @@ export class Vec4 {
 	 * @param mat4
 	 * @returns the current updated Vector4
 	 */
-	public _multiplyMat4(mat4: Mat4): Vec4 {
-		return this.set(
+	public _mulMat4(mat4: Mat4): Vec4 {
+		return this._set(
 			this.x * mat4.m11 + this.y * mat4.m21 + this.z * mat4.m31 + this.w * mat4.m41,
 			this.x * mat4.m12 + this.y * mat4.m22 + this.z * mat4.m32 + this.w * mat4.m42,
 			this.x * mat4.m13 + this.y * mat4.m23 + this.z * mat4.m33 + this.w * mat4.m43,
@@ -250,8 +247,8 @@ export class Vec4 {
 	 * @param mat4
 	 * @returns the resulting Vector4
 	 */
-	public permultiplyMat4(mat4: Mat4): Vec4 {
-		return this.clone()._permultiplyMat4(mat4);
+	public permulMat4(mat4: Mat4): Vec4 {
+		return this.clone()._permulMat4(mat4);
 	}
 
 	/**
@@ -259,8 +256,8 @@ export class Vec4 {
 	 * @param mat4
 	 * @returns the current updated Vector4
 	 */
-	public _permultiplyMat4(mat4: Mat4): Vec4 {
-		return this.set(
+	public _permulMat4(mat4: Mat4): Vec4 {
+		return this._set(
 			mat4.m11 * this.x + mat4.m12 * this.y + mat4.m13 * this.z + mat4.m14 * this.w,
 			mat4.m21 * this.x + mat4.m22 * this.y + mat4.m23 * this.z + mat4.m24 * this.w,
 			mat4.m31 * this.x + mat4.m32 * this.y + mat4.m33 * this.z + mat4.m34 * this.w,
@@ -273,8 +270,8 @@ export class Vec4 {
 	 * @param scalar
 	 * @returns
 	 */
-	public multiplyScalar(scalar: number): Vec4 {
-		return this.clone()._multiplyScalar(scalar);
+	public mulScalar(scalar: number): Vec4 {
+		return this.clone()._mulScalar(scalar);
 	}
 
 	/**
@@ -282,7 +279,7 @@ export class Vec4 {
 	 * @param scalar
 	 * @returns
 	 */
-	public _multiplyScalar(scalar: number): Vec4 {
+	public _mulScalar(scalar: number): Vec4 {
 		this.x *= scalar;
 		this.y *= scalar;
 		this.z *= scalar;
@@ -345,54 +342,10 @@ export class Vec4 {
 	 * @param z
 	 * @returns the current updated Vector4
 	 */
-	public set(x: number, y: number, z: number, w: number): Vec4 {
+	public _set(x: number, y: number, z: number, w: number): Vec4 {
 		this.x = x;
 		this.y = y;
 		this.z = z;
-		this.w = w;
-
-		return this;
-	}
-
-	/**
-	 *
-	 * @param x
-	 * @returns the current updated Vector4
-	 */
-	public setX(x: number): Vec4 {
-		this.x = x;
-
-		return this;
-	}
-
-	/**
-	 *
-	 * @param y
-	 * @returns the current updated Vector4
-	 */
-	public setY(y: number): Vec4 {
-		this.y = y;
-
-		return this;
-	}
-
-	/**
-	 *
-	 * @param z
-	 * @returns the current updated Vector4
-	 */
-	public setZ(z: number): Vec4 {
-		this.z = z;
-
-		return this;
-	}
-
-	/**
-	 *
-	 * @param w
-	 * @returns the current updated Vector4
-	 */
-	public setW(w: number): Vec4 {
 		this.w = w;
 
 		return this;

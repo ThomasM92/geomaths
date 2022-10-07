@@ -10,6 +10,17 @@ export class AxisAngle {
 	 */
 	constructor(public axis: Vec3, public angle: number) {}
 
+	public clone(): AxisAngle {
+		return new AxisAngle(this.axis, this.angle);
+	}
+
+	public _copy(axisAngle: AxisAngle): AxisAngle {
+		this.axis = axisAngle.axis;
+		this.angle = axisAngle.angle;
+
+		return this;
+	}
+
 	/**
 	 * @see https://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToAngle/index.htm
 	 * @param quat

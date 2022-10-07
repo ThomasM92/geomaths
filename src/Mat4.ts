@@ -1,10 +1,11 @@
+import { AxisAngle } from './AxisAngle';
 import { EPSILON } from './constants';
 import { Euler } from './Euler';
 import { Mat3 } from './Mat3';
 import { Vec3 } from './Vec3';
 
+/** A 4 by 4 matrix */
 export class Mat4 {
-	/** @constructor */
 	constructor(
 		public m11: number = 0,
 		public m12: number = 0,
@@ -48,38 +49,13 @@ export class Mat4 {
 
 	// * Public Methods *
 
-	public apply(fn: (element: number) => number): Mat4 {
-		return this.clone()._apply(fn);
-	}
-
-	public _apply(fn: (element: number) => number): Mat4 {
-		this.m11 = fn(this.m11);
-		this.m12 = fn(this.m12);
-		this.m13 = fn(this.m13);
-		this.m14 = fn(this.m14);
-		this.m21 = fn(this.m21);
-		this.m22 = fn(this.m22);
-		this.m23 = fn(this.m23);
-		this.m24 = fn(this.m24);
-		this.m31 = fn(this.m31);
-		this.m32 = fn(this.m32);
-		this.m33 = fn(this.m33);
-		this.m34 = fn(this.m34);
-		this.m41 = fn(this.m41);
-		this.m42 = fn(this.m42);
-		this.m43 = fn(this.m43);
-		this.m44 = fn(this.m44);
-
-		return this;
-	}
-
 	/**
 	 *
 	 * @param mat4
 	 * @returns this: this[i,j] <- mat4[i,j]
 	 */
-	public copy(mat4: Mat4): Mat4 {
-		return this.set(
+	public _copy(mat4: Mat4): Mat4 {
+		return this._set(
 			mat4.m11,
 			mat4.m12,
 			mat4.m13,
@@ -162,7 +138,7 @@ export class Mat4 {
 	 * @see http://www.euclideanspace.com/maths/algebra/matrix/functions/inverse/fourD/index.htm
 	 * @returns
 	 */
-	public invert(): Mat4 | void {
+	public inv(): Mat4 | void {
 		const A2323 = this.m33 * this.m44 - this.m34 * this.m43;
 		const A1323 = this.m32 * this.m44 - this.m34 * this.m42;
 		const A1223 = this.m32 * this.m43 - this.m33 * this.m42;
@@ -218,7 +194,7 @@ export class Mat4 {
 	 * @param precision [precision=EPSILON]
 	 * @returns
 	 */
-	public isEqualTo(mat4: Mat4, precision: number = EPSILON): boolean {
+	public equals(mat4: Mat4, precision: number = EPSILON): boolean {
 		return (
 			Math.abs(this.m11 - mat4.m11) < precision &&
 			Math.abs(this.m12 - mat4.m12) < precision &&
@@ -239,13 +215,38 @@ export class Mat4 {
 		);
 	}
 
+	public map(fn: (element: number) => number): Mat4 {
+		return this.clone()._map(fn);
+	}
+
+	public _map(fn: (element: number) => number): Mat4 {
+		this.m11 = fn(this.m11);
+		this.m12 = fn(this.m12);
+		this.m13 = fn(this.m13);
+		this.m14 = fn(this.m14);
+		this.m21 = fn(this.m21);
+		this.m22 = fn(this.m22);
+		this.m23 = fn(this.m23);
+		this.m24 = fn(this.m24);
+		this.m31 = fn(this.m31);
+		this.m32 = fn(this.m32);
+		this.m33 = fn(this.m33);
+		this.m34 = fn(this.m34);
+		this.m41 = fn(this.m41);
+		this.m42 = fn(this.m42);
+		this.m43 = fn(this.m43);
+		this.m44 = fn(this.m44);
+
+		return this;
+	}
+
 	/**
 	 *
 	 * @param mat4
 	 * @returns mat4 * this
 	 */
-	public multiplyMat4(mat4: Mat4): Mat4 {
-		return this.clone()._multiplyMat4(mat4);
+	public mul(mat4: Mat4): Mat4 {
+		return this.clone()._mul(mat4);
 	}
 
 	/**
@@ -253,8 +254,8 @@ export class Mat4 {
 	 * @param matrix4
 	 * @returns this <- mat4 * this
 	 */
-	public _multiplyMat4(matrix4: Mat4): Mat4 {
-		return this.set(
+	public _mul(matrix4: Mat4): Mat4 {
+		return this._set(
 			matrix4.m11 * this.m11 +
 				matrix4.m12 * this.m21 +
 				matrix4.m13 * this.m31 +
@@ -327,8 +328,8 @@ export class Mat4 {
 	 * @param mat4
 	 * @returns mat4 * this
 	 */
-	public permultiplyMat4(mat4: Mat4): Mat4 {
-		return this.clone()._permultiplyMat4(mat4);
+	public permul(mat4: Mat4): Mat4 {
+		return this.clone()._permul(mat4);
 	}
 
 	/**
@@ -336,8 +337,8 @@ export class Mat4 {
 	 * @param mat4
 	 * @returns this <- this * mat4
 	 */
-	public _permultiplyMat4(mat4: Mat4): Mat4 {
-		return this.set(
+	public _permul(mat4: Mat4): Mat4 {
+		return this._set(
 			this.m11 * mat4.m11 + this.m12 * mat4.m21 + this.m13 * mat4.m31 + this.m14 * mat4.m41,
 			this.m11 * mat4.m12 + this.m12 * mat4.m22 + this.m13 * mat4.m32 + this.m14 * mat4.m42,
 			this.m11 * mat4.m13 + this.m12 * mat4.m23 + this.m13 * mat4.m33 + this.m14 * mat4.m43,
@@ -362,7 +363,7 @@ export class Mat4 {
 	 * @param vec3
 	 * @returns vector3 * this
 	 */
-	public permultiplyVec3(vec3: Vec3): Vec3 {
+	public permulVec3(vec3: Vec3): Vec3 {
 		const w = 1 / (vec3.x * this.m14 + vec3.y * this.m24 + vec3.z * this.m34 + this.m44);
 
 		return new Vec3(
@@ -377,7 +378,7 @@ export class Mat4 {
 	 * @param vec3
 	 * @returns this * vector3
 	 */
-	public multiplyVec3(vec3: Vec3): Vec3 {
+	public mulVec3(vec3: Vec3): Vec3 {
 		const w = 1 / (this.m41 * vec3.x + this.m42 * vec3.y + this.m43 * vec3.z + this.m44);
 
 		return new Vec3(
@@ -392,8 +393,8 @@ export class Mat4 {
 	 * @param scalar
 	 * @returns mat4 <- this[i,j] * scalar
 	 */
-	public mutliplyScalar(scalar: number): Mat4 {
-		return this.clone()._mutliplyScalar(scalar);
+	public mulScalar(scalar: number): Mat4 {
+		return this.clone()._mulScalar(scalar);
 	}
 
 	/**
@@ -401,7 +402,7 @@ export class Mat4 {
 	 * @param scalar
 	 * @returns this <- this[i,j] * scalar
 	 */
-	public _mutliplyScalar(scalar: number): Mat4 {
+	public _mulScalar(scalar: number): Mat4 {
 		this.m11 *= scalar;
 		this.m12 *= scalar;
 		this.m13 *= scalar;
@@ -422,7 +423,7 @@ export class Mat4 {
 		return this;
 	}
 
-	public set(
+	public _set(
 		m11: number,
 		m12: number,
 		m13: number,
@@ -460,7 +461,7 @@ export class Mat4 {
 		return this;
 	}
 
-	public setRotation(mat3: Mat3): Mat4 {
+	public _rotation(mat3: Mat3): Mat4 {
 		this.m11 = mat3.m11;
 		this.m12 = mat3.m12;
 		this.m13 = mat3.m13;
@@ -474,7 +475,7 @@ export class Mat4 {
 		return this;
 	}
 
-	public setScale(vec3: Vec3): Mat4 {
+	public _scale(vec3: Vec3): Mat4 {
 		this.m11 = vec3.x;
 		this.m22 = vec3.y;
 		this.m33 = vec3.z;
@@ -482,7 +483,7 @@ export class Mat4 {
 		return this;
 	}
 
-	public setTranslation(vec3: Vec3): Mat4 {
+	public _translation(vec3: Vec3): Mat4 {
 		this.m14 = vec3.x;
 		this.m24 = vec3.y;
 		this.m34 = vec3.z;
@@ -548,14 +549,14 @@ export class Mat4 {
 		return new Mat4(m11, m12, m13, m14, m21, m22, m23, m24, m31, m32, m33, m34, m41, m42, m43, m44);
 	}
 
-	public static identity(): Mat4 {
+	public static Identity(): Mat4 {
 		return new Mat4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
 	}
 
-	public static makeRotationAroundAxis(axis: Vec3, angle: number): Mat4 {
-		const { x, y, z } = axis,
-			c = Math.cos(angle),
-			s = Math.sin(angle),
+	public static fromAxisAngle(axisAngle: AxisAngle): Mat4 {
+		const { x, y, z } = axisAngle.axis,
+			c = Math.cos(axisAngle.angle),
+			s = Math.sin(axisAngle.angle),
 			cc = 1 - c,
 			xy = x * y,
 			xz = x * z,
@@ -586,40 +587,6 @@ export class Mat4 {
 
 	public static fromEuler(euler: Euler): Mat4 {
 		const mat3 = Mat3.fromEuler(euler);
-		return new Mat4().setRotation(mat3);
-	}
-
-	/**
-	 *
-	 * @param {Vec3} directionX
-	 * @param {Vec3} directionY
-	 * @param {Vec3} directionZ
-	 * @param {Vec3} position
-	 * @returns {Mat4}
-	 */
-	public static rotationMatrixFromAxes(
-		directionX: Vec3,
-		directionY: Vec3,
-		directionZ: Vec3,
-		position: Vec3
-	): Mat4 {
-		return new Mat4(
-			directionX.x,
-			directionY.x,
-			directionZ.x,
-			position.x,
-			directionX.y,
-			directionY.y,
-			directionZ.y,
-			position.y,
-			directionX.z,
-			directionY.z,
-			directionZ.z,
-			position.z,
-			0,
-			0,
-			0,
-			1
-		);
+		return Mat4.Identity()._rotation(mat3);
 	}
 }

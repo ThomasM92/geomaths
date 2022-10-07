@@ -15,7 +15,6 @@ export enum EulerOrder {
 }
 
 export class Euler {
-	/** @constructor */
 	constructor(
 		public x: number = 0,
 		public y: number = 0,
@@ -27,11 +26,11 @@ export class Euler {
 		return new Euler(this.x, this.y, this.z, this.order);
 	}
 
-	public copy(euler: Euler): Euler {
-		return this.set(euler.x, euler.y, euler.z, euler.order);
+	public _copy(euler: Euler): Euler {
+		return this._set(euler.x, euler.y, euler.z, euler.order);
 	}
 
-	public isEqualTo(euler: Euler, precision: number = EPSILON): boolean {
+	public equals(euler: Euler, precision: number = EPSILON): boolean {
 		return (
 			Math.abs(this.x - euler.x) < precision &&
 			Math.abs(this.y - euler.y) < precision &&
@@ -40,7 +39,7 @@ export class Euler {
 		);
 	}
 
-	public set(x: number, y: number, z: number, order: EulerOrder): Euler {
+	public _set(x: number, y: number, z: number, order: EulerOrder): Euler {
 		this.x = x;
 		this.y = y;
 		this.z = z;
